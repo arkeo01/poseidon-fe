@@ -11,13 +11,14 @@ class App extends Component {
       web3: {},
       web3Socket: {},
       instance: {},
-      socketInstance: {}
+      socketInstance: {},
+      liquidations: {}
     }
   }
   
   componentDidMount () {
     if (window.ethereum != null) {
-      const web3 = new Web3(window.ethereum);      
+      const web3 = new Web3(window.ethereum);
       if(web3){
         this.setState({
           web3: web3
@@ -63,6 +64,22 @@ class App extends Component {
 
   // TODO: Complete Function for Subscribing to events using socket
 
+  getTopLiquidations = async () => {
+    try{
+      const response = await fetch('https://protocol-api.aave.com/liquidations?get=proto');
+      const liquidations = await response.json();
+      console.log('Data from Liquidations API:',liquidations);
+      this.setState({
+        liquidations: liquidations.data.slice(0,10)
+      });
+
+      console.log(this.state);
+    }
+    catch(err){
+      console.log(err);
+    }
+  }
+
   render () {
     return (
       <div className="App">
@@ -86,6 +103,14 @@ class App extends Component {
             onClick={() => this.loadAdressesProviderContract('0x88757f2f99175387aB4C6a4b3067c77A695b0349')}
           >
             Instantiate contracts
+          </button>
+          <button
+            className="App-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => this.getTopLiquidations()}
+          >
+            Fetch Liquidations
           </button>
         </header>
       </div>
